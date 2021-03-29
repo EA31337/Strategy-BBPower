@@ -16,7 +16,7 @@ INPUT int BearsPower_PriceStopMethod = 0;                                     //
 INPUT float BearsPower_PriceStopLevel = 0;                                    // Price stop level
 INPUT int BearsPower_TickFilterMethod = 1;                                    // Tick filter method
 INPUT float BearsPower_MaxSpread = 4.0;                                       // Max spread to trade (pips)
-INPUT int BearsPower_Shift = 0;             // Shift (relative to the current bar, 0 - default)
+INPUT short BearsPower_Shift = 0;           // Shift (relative to the current bar, 0 - default)
 INPUT int BearsPower_OrderCloseTime = -20;  // Order close time in mins (>0) or bars (<0)
 INPUT string __BearsPower_Indi_BearsPower_Parameters__ =
     "-- BearsPower strategy: BearsPower indicator params --";  // >>> BearsPower strategy: BearsPower indicator <<<
