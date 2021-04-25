@@ -66,7 +66,7 @@ struct Stg_BearsPower_Params : StgParams {
 
 class Stg_BearsPower : public Strategy {
  public:
-  Stg_BearsPower(StgParams &_params, string _name) : Strategy(_params, _name) {}
+  Stg_BearsPower(StgParams &_params, Trade *_trade = NULL, string _name = "") : Strategy(_params, _trade, _name) {}
 
   static Stg_BearsPower *Init(ENUM_TIMEFRAMES _tf = NULL, long _magic_no = NULL, ENUM_LOG_LEVEL _log_level = V_INFO) {
     // Initialize strategy initial values.
@@ -81,12 +81,9 @@ class Stg_BearsPower : public Strategy {
     // Initialize indicator.
     BearsPowerParams bears_params(_indi_params);
     _stg_params.SetIndicator(new Indi_BearsPower(_indi_params));
-    // Initialize strategy parameters.
-    _stg_params.GetLog().SetLevel(_log_level);
-    _stg_params.SetMagicNo(_magic_no);
-    _stg_params.SetTf(_tf, _Symbol);
-    // Initialize strategy instance.
-    Strategy *_strat = new Stg_BearsPower(_stg_params, "BearsPower");
+    // Initialize Strategy instance.
+    TradeParams _tparams(_magic_no, _log_level);
+    Strategy *_strat = new Stg_BearsPower(_stg_params, new Trade(new Chart(_tf, _Symbol)), "BearsPower");
     return _strat;
   }
 
@@ -94,7 +91,7 @@ class Stg_BearsPower : public Strategy {
    * Check strategy's opening signal.
    */
   bool SignalOpen(ENUM_ORDER_TYPE _cmd, int _method = 0, float _level = 0.0f, int _shift = 0) {
-    Chart *_chart = sparams.GetChart();
+    Chart *_chart = trade.GetChart();
     Indi_BearsPower *_indi = GetIndicator();
     bool _is_valid = _indi[CURR].IsValid() && _indi[PREV].IsValid() && _indi[PPREV].IsValid();
     bool _result = _is_valid;
