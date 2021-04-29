@@ -49,7 +49,7 @@ struct Stg_BearsPower_Params : StgParams {
 
   // Struct constructors.
   Stg_BearsPower_Params(BearsPowerParams &_iparams, StgParams &_sparams)
-      : iparams(indi_bears_defaults, _iparams.tf), sparams(stg_bears_defaults) {
+      : iparams(indi_bears_defaults, _iparams.tf.GetTf()), sparams(stg_bears_defaults) {
     iparams = _iparams;
     sparams = _sparams;
   }
