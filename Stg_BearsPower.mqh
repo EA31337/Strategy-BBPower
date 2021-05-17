@@ -8,13 +8,13 @@ INPUT string __BearsPower_Parameters__ = "-- BearsPower strategy params --";  //
 INPUT float BearsPower_LotSize = 0;                                           // Lot size
 INPUT int BearsPower_SignalOpenMethod = 0;                                    // Signal open method (0-
 INPUT float BearsPower_SignalOpenLevel = 0.0f;                                // Signal open level
-INPUT int BearsPower_SignalOpenFilterMethod = 1;                              // Signal filter method
+INPUT int BearsPower_SignalOpenFilterMethod = 32;                             // Signal filter method
 INPUT int BearsPower_SignalOpenBoostMethod = 0;                               // Signal boost method
 INPUT int BearsPower_SignalCloseMethod = 0;                                   // Signal close method
 INPUT float BearsPower_SignalCloseLevel = 0.0f;                               // Signal close level
 INPUT int BearsPower_PriceStopMethod = 0;                                     // Price stop method
 INPUT float BearsPower_PriceStopLevel = 0;                                    // Price stop level
-INPUT int BearsPower_TickFilterMethod = 1;                                    // Tick filter method
+INPUT int BearsPower_TickFilterMethod = 32;                                   // Tick filter method
 INPUT float BearsPower_MaxSpread = 4.0;                                       // Max spread to trade (pips)
 INPUT short BearsPower_Shift = 0;           // Shift (relative to the current bar, 0 - default)
 INPUT int BearsPower_OrderCloseTime = -20;  // Order close time in mins (>0) or bars (<0)
@@ -101,35 +101,30 @@ class Stg_BearsPower : public Strategy {
       // Returns false when indicator data is not valid.
       return false;
     }
-    double level = _level * Chart().GetPipSize();
+    IndicatorSignal _signals = _indi.GetSignals(4, _shift);
     switch (_cmd) {
       case ORDER_TYPE_BUY:
         // The histogram is above zero level.
         // Fall of histogram, which is above zero, indicates that while the bulls prevail on the market,
         // their strength begins to weaken and the bears gradually increase their pressure.
-        _result = _indi[CURR][0] > 0 && _indi.IsIncreasing(3);
-        _result &= _indi.IsIncByPct(_level, 0, 0, 2);
-        // Signal: Changing from negative values to positive.
-        if (_result && _method != 0) {
-          if (METHOD(_method, 0)) _result &= _indi.IsIncreasing(2, 0, 3);
-          if (METHOD(_method, 1)) _result &= _indi.IsIncreasing(2, 0, 5);
-          // When histogram passes through zero level from bottom up,
-          // bears have lost control over the market and bulls increase pressure.
-          if (METHOD(_method, 2)) _result &= _indi[PPREV][0] < 0;
-        }
+        _result &= _indi[CURR][0] > 0;
+        _result &= _indi.IsIncreasing(1);
+        _result &= _indi.IsIncByPct(_level, 0, 0, 3);
+        _result &= _method > 0 ? _signals.CheckSignals(_method) : _signals.CheckSignalsAll(-_method);
+        // @todo: Signal: Changing from negative values to positive.
+        // When histogram passes through zero level from bottom up,
+        // bears have lost control over the market and bulls increase pressure.
         break;
       case ORDER_TYPE_SELL:
         // Strong bearish trend - the histogram is located below the central line.
-        _result = _indi[CURR][0] < 0 && _indi.IsDecreasing(3);
-        _result &= _indi.IsDecByPct(-_level, 0, 0, 2);
-        if (_result && _method != 0) {
-          // When histogram is below zero level, but with the rays pointing upwards (upward trend),
-          // then we can assume that, in spite of still bearish sentiment in the market, their strength begins to
-          // weaken.
-          if (METHOD(_method, 0)) _result &= _indi.IsDecreasing(2, 0, 3);
-          if (METHOD(_method, 1)) _result &= _indi.IsDecreasing(2, 0, 5);
-          if (METHOD(_method, 2)) _result &= _indi[PPREV][0] > 0;
-        }
+        _result &= _indi[CURR][0] < 0;
+        _result &= _indi.IsDecreasing(1);
+        _result &= _indi.IsDecByPct(-_level, 0, 0, 3);
+        _result &= _method > 0 ? _signals.CheckSignals(_method) : _signals.CheckSignalsAll(-_method);
+        // @todo
+        // When histogram is below zero level, but with the rays pointing upwards (upward trend),
+        // then we can assume that, in spite of still bearish sentiment in the market, their strength begins to
+        // weaken.
         break;
     }
     return _result;
