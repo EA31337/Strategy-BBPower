@@ -6,13 +6,13 @@
 // User input params.
 INPUT string __BearsPower_Parameters__ = "-- BearsPower strategy params --";  // >>> BEARS POWER <<<
 INPUT float BearsPower_LotSize = 0;                                           // Lot size
-INPUT int BearsPower_SignalOpenMethod = 0;                                    // Signal open method (0-
+INPUT int BearsPower_SignalOpenMethod = 2;                                    // Signal open method (-127-127)
 INPUT float BearsPower_SignalOpenLevel = 0.0f;                                // Signal open level
 INPUT int BearsPower_SignalOpenFilterMethod = 32;                             // Signal filter method
 INPUT int BearsPower_SignalOpenBoostMethod = 0;                               // Signal boost method
-INPUT int BearsPower_SignalCloseMethod = 0;                                   // Signal close method
+INPUT int BearsPower_SignalCloseMethod = 2;                                   // Signal close method
 INPUT float BearsPower_SignalCloseLevel = 0.0f;                               // Signal close level
-INPUT int BearsPower_PriceStopMethod = 0;                                     // Price stop method
+INPUT int BearsPower_PriceStopMethod = 1;                                     // Price stop method
 INPUT float BearsPower_PriceStopLevel = 0;                                    // Price stop level
 INPUT int BearsPower_TickFilterMethod = 32;                                   // Tick filter method
 INPUT float BearsPower_MaxSpread = 4.0;                                       // Max spread to trade (pips)
